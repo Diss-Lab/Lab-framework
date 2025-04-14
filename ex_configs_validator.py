@@ -38,4 +38,4 @@ def validate_config(file_path):
 
 # Example usage
 if __name__ == "__main__":
-    validate_config("f:\\ANW\\Lab-framework-core\\experiment_configs.yaml")
+    validate_config("f:\\ANW\\Lab-framework-core\\ex_configs.yaml")
