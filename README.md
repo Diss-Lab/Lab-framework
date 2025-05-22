@@ -99,16 +99,16 @@
   ```
 - 执行以下代码（需先 `pip install sqlalchemy`）：
   ```python
-  from app.models.user import User, Base
-  from app.core.security import get_password_hash
-  from app.database import engine, SessionLocal
-  Base.metadata.create_all(bind=engine)
-  db = SessionLocal()
-  admin = User(username="admin", email="admin@example.com", hashed_password=get_password_hash("admin123"), role="admin")
-  db.add(admin)
-  db.commit()
-  db.close()
-  exit()
+   from app.models.user import User, Base
+   from app.core.security import get_password_hash
+   from app.database import engine, SessionLocal
+   Base.metadata.create_all(bind=engine)
+   db = SessionLocal()
+   admin = User(username="admin", email="admin@example.com", hashed_password=get_password_hash("admin123"), role="admin")
+   db.add(admin)
+   db.commit()
+   db.close()
+   exit()
   ```
 
 #### 3. 管理员登录获取Token
