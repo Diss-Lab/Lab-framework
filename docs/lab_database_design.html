@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实验室管理系统数据结构设计</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+        
+        .tab-btn {
+            padding: 12px 24px;
+            background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #495057;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .tab-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+        
+        .tab-btn.active {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            border: 1px solid rgba(102, 126, 234, 0.1);
+        }
+        
+        .table-title {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .table-icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .description {
+            color: #6c757d;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
+            border-left: 4px solid #667eea;
+            border-radius: 8px;
+            font-style: italic;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        
+        th {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        th:first-child {
+            border-top-left-radius: 10px;
+        }
+        
+        th:last-child {
+            border-top-right-radius: 10px;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e9ecef;
+            vertical-align: top;
+        }
+        
+        tr:hover {
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .field-name {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .field-type {
+            background: linear-gradient(45deg, #e3f2fd, #f3e5f5);
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #5e35b1;
+        }
+        
+        .nullable {
+            background: #d4edda;
+            color: #155724;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        
+        .not-null {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        
+        .relationships {
+            background: linear-gradient(135deg, #fff3e0 0%, #fce4ec 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        
+        .relationships h3 {
+            color: #d84315;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .relationship-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #ff7043;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .sql-preview {
+            background: #263238;
+            color: #b0bec5;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+        
+        .sql-keyword {
+            color: #81c784;
+            font-weight: bold;
+        }
+        
+        .sql-type {
+            color: #ffab91;
+        }
+        
+        .sql-comment {
+            color: #78909c;
+            font-style: italic;
+        }
+        
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .overview-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .overview-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.15);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+        
+        .card-title {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        
+        .card-count {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .features-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .features-list li {
+            padding: 8px 0;
+            color: #6c757d;
+            border-bottom: 1px solid #f1f3f4;
+            position: relative;
+            padding-left: 20px;
+        }
+        
+        .features-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .features-list li:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 实验室管理系统数据结构设计</h1>
+        
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('overview')">📊 系统概览</button>
+            <button class="tab-btn" onclick="showTab('users')">👥 用户管理</button>
+            <button class="tab-btn" onclick="showTab('equipment')">🔧 设备管理</button>
+            <button class="tab-btn" onclick="showTab('materials')">📦 材料管理</button>
+            <button class="tab-btn" onclick="showTab('logs')">📝 日志系统</button>
+            <button class="tab-btn" onclick="showTab('reservations')">📅 预约管理</button>
+            <button class="tab-btn" onclick="showTab('relationships')">🔗 关系图谱</button>
+            <button class="tab-btn" onclick="showTab('sql')">💻 SQL 预览</button>
+        </div>
+
+        <!-- 系统概览 -->
+        <div id="overview" class="tab-content active">
+            <div class="overview-grid">
+                <div class="overview-card">
+                    <div class="card-header">
+                        <div class="card-icon">👥</div>
+                        <div class="card-title">用户与权限</div>
+                        <div class="card-count">3 张表</div>
+                    </div>
+                    <ul class="features-list">
+                        <li>用户基本信息管理</li>
+                        <li>角色权限控制</li>
+                        <li>登录会话管理</li>
+                        <li>管理员注册控制</li>
+                    </ul>
+                </div>
+                
+                <div class="overview-card">
+                    <div class="card-header">
+                        <div class="card-icon">🔧</div>
+                        <div class="card-title">设备管理</div>
+                        <div class="card-count">2 张表</div>
+                    </div>
+                    <ul class="features-list">
+                        <li>设备基本信息</li>
+                        <li>状态实时跟踪</li>
+                        <li>使用说明管理</li>
+                        <li>维护记录</li>
+                    </ul>
+                </div>
+                
+                <div class="overview-card">
+                    <div class="card-header">
+                        <div class="card-icon">📦</div>
+                        <div class="card-title">材料管理</div>
+                        <div class="card-count">2 张表</div>
+                    </div>
+                    <ul class="features-list">
+                        <li>材料分类管理</li>
+                        <li>库存数量跟踪</li>
+                        <li>规格参数记录</li>
+                        <li>供应商信息</li>
+                    </ul>
+                </div>
+                
+                <div class="overview-card">
+                    <div class="card-header">
+                        <div class="card-icon">📊</div>
+                        <div class="card-title">日志与预约</div>
+                        <div class="card-count">2 张表</div>
+                    </div>
+                    <ul class="features-list">
+                        <li>使用日志记录</li>
+                        <li>预约时间管理</li>
+                        <li>冲突检测</li>
+                        <li>审批流程</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 用户管理 -->
+        <div id="users" class="tab-content">
+            <div class="table-container">
+                <div class="table-title">
+                    <div class="table-icon">👤</div>
+                    用户表 (users)
+                </div>
+                <div class="description">
+                    存储系统用户的基本信息，支持角色权限管理。仅管理员可注册新用户。
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>字段名</th>
+                            <th>数据类型</th>
+                            <th>约束</th>
+                            <th>描述</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="field-name">name</td>
+                            <td><span class="field-type">VARCHAR(100)</span></td>
+                            <td><span class="not-null">唯一 非空</span></td>
+                            <td>分类名称</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">description</td>
+                            <td><span class="field-type">TEXT</span></td>
+                            <td><span class="nullable">可空</span></td>
+                            <td>分类描述</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">parent_id</td>
+                            <td><span class="field-type">INTEGER</span></td>
+                            <td><span class="nullable">外键(自关联)</span></td>
+                            <td>父分类ID，支持层级分类</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">created_at</td>
+                            <td><span class="field-type">TIMESTAMP</span></td>
+                            <td><span class="not-null">默认当前时间</span></td>
+                            <td>创建时间</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 材料管理 -->
+        <div id="materials" class="tab-content">
+            <div class="table-container">
+                <div class="table-title">
+                    <div class="table-icon">📦</div>
+                    材料表 (materials)
+                </div>
+                <div class="description">
+                    管理实验室材料库存，包括规格参数、供应商信息和库存跟踪。
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>字段名</th>
+                            <th>数据类型</th>
+                            <th>约束</th>
+                            <th>描述</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="field-name">id</td>
+                            <td><span class="field-type">INTEGER</span></td>
+                            <td><span class="not-null">主键</span></td>
+                            <td>材料唯一标识</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">name</td>
+                            <td><span class="field-type">VARCHAR(100)</span></td>
+                            <td><span class="not-null">非空</span></td>
+                            <td>材料名称</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">category_id</td>
+                            <td><span class="field-type">INTEGER</span></td>
+                            <td><span class="not-null">外键</span></td>
+                            <td>材料分类ID</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">brand</td>
+                            <td><span class="field-type">VARCHAR(100)</span></td>
+                            <td><span class="nullable">可空</span></td>
+                            <td>品牌</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">model</td>
+                            <td><span class="field-type">VARCHAR(100)</span></td>
+                            <td><span class="nullable">可空</span></td>
+                            <td>型号规格</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">specifications</td>
+                            <td><span class="field-type">JSON</span></td>
+                            <td><span class="nullable">可空</span></td>
+                            <td>技术参数规格</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">unit</td>
+                            <td><span class="field-type">VARCHAR(20)</span></td>
+                            <td><span class="not-null">非空</span></td>
+                            <td>计量单位 (个/瓶/克/升等)</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">total_quantity</td>
+                            <td><span class="field-type">DECIMAL(10,3)</span></td>
+                            <td><span class="not-null">默认0</span></td>
+                            <td>总库存数量</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">available_quantity</td>
+                            <td><span class="field-type">DECIMAL(10,3)</span></td>
+                            <td><span class="not-null">默认0</span></td>
+                            <td>可用库存数量</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">reserved_quantity</td>
+                            <td><span class="field-type">DECIMAL(10,3)</span></td>
+                            <td><span class="not-null">默认0</span></td>
+                            <td>预留库存数量</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">min_stock_alert</td>
+                            <td><span class="field-type">DECIMAL(10,3)</span></td>
+                            <td><span class="nullable">可空</span></td>
+                            <td>最低库存预警阈值</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">location</td>
+                            <td><span class="field-type">VARCHAR(200)</span></td>
+                            <td><span class="nullable">可空</span></td>
+                            <td>存放位置</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">supplier</td>
+                            <td><span class="field-type">VARCHAR(100)</span></td>
+                            <td><span class="nullable">可空</span></td>
+                            <td>供应商</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">purchase_price</td>
+                            <td><span class="field-type">DECIMAL(10,2)</span></td>
+                            <td><span class="nullable">可空</span></td>
+                            <td>单价</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">expiry_date</td>
+                            <td><span class="field-type">DATE</span></td>
+                            <td><span class="nullable">可空</span></td>
+                            <td>过期日期</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">safety_info</td>
+                            <td><span class="field-type">TEXT</span></td>
+                            <td><span class="nullable">可空</span></td>
+                            <td>安全注意事项</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">owner_id</td>
+                            <td><span class="field-type">INTEGER</span></td>
+                            <td><span class="nullable">外键</span></td>
+                            <td>负责人ID</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">last_used_at</td>
+                            <td><span class="field-type">TIMESTAMP</span></td>
+                            <td><span class="nullable">可空</span></td>
+                            <td>最后使用时间</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">created_at</td>
+                            <td><span class="field-type">TIMESTAMP</span></td>
+                            <td><span class="not-null">默认当前时间</span></td>
+                            <td>创建时间</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">updated_at</td>
+                            <td><span class="field-type">TIMESTAMP</span></td>
+                            <td><span class="nullable">可空</span></td>
+                            <td>更新时间</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-container">
+                <div class="table-title">
+                    <div class="table-icon">🏷️</div>
+                    材料分类表 (material_categories)
+                </div>
+                <div class="description">
+                    材料分类管理，支持层级分类结构。
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>字段名</th>
+                            <th>数据类型</th>
+                            <th>约束</th>
+                            <th>描述</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="field-name">id</td>
+                            <td><span class="field-type">INTEGER</span></td>
+                            <td><span class="not-null">主键</span></td>
+                            <td>分类唯一标识</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">name</td>
+                            <td><span class="field-type">VARCHAR(100)</span></td>
+                            <td><span class="not-null">唯一 非空</span></td>
+                            <td>分类名称</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">description</td>
+                            <td><span class="field-type">TEXT</span></td>
+                            <td><span class="nullable">可空</span></td>
+                            <td>分类描述</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">parent_id</td>
+                            <td><span class="field-type">INTEGER</span></td>
+                            <td><span class="nullable">外键(自关联)</span></td>
+                            <td>父分类ID，支持层级分类</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">safety_level</td>
+                            <td><span class="field-type">ENUM</span></td>
+                            <td><span class="nullable">可空</span></td>
+                            <td>安全等级: low/medium/high/dangerous</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">created_at</td>
+                            <td><span class="field-type">TIMESTAMP</span></td>
+                            <td><span class="not-null">默认当前时间</span></td>
+                            <td>创建时间</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 日志系统 -->
+        <div id="logs" class="tab-content">
+            <div class="table-container">
+                <div class="table-title">
+                    <div class="table-icon">📝</div>
+                    使用日志表 (usage_logs)
+                </div>
+                <div class="description">
+                    记录设备和材料的使用情况，支持半自动化日志记录。
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>字段名</th>
+                            <th>数据类型</th>
+                            <th>约束</th>
+                            <th>描述</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="field-name">id</td>
+                            <td><span class="field-type">INTEGER</span></td>
+                            <td><span class="not-null">主键</span></td>
+                            <td>日志唯一标识</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">user_id</td>
+                            <td><span class="field-type">INTEGER</span></td>
+                            <td><span class="not-null">外键</span></td>
+                            <td>操作用户ID</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">resource_type</td>
+                            <td><span class="field-type">ENUM</span></td>
+                            <td><span class="not-null">非空</span></td>
+                            <td>资源类型: equipment/material</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">resource_id</td>
+                            <td><span class="field-type">INTEGER</span></td>
+                            <td><span class="not-null">非空</span></td>
+                            <td>资源ID (设备ID或材料ID)</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">action</td>
+                            <td><span class="field-type">ENUM</span></td>
+                            <td><span class="not-null">非空</span></td>
+                            <td>操作类型: start_use/end_use/consume/maintenance</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">quantity_used</td>
+                            <td><span class="field-type">DECIMAL(10,3)</span></td>
+                            <td><span class="nullable">可空</span></td>
+                            <td>使用数量 (材料专用)</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">duration_minutes</td>
+                            <td><span class="field-type">INTEGER</span></td>
+                            <td><span class="nullable">可空</span></td>
+                            <td>使用时长(分钟，设备专用)</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">purpose</td>
+                            <td><span class="field-type">VARCHAR(200)</span></td>
+                            <td><span class="nullable">可空</span></td>
+                            <td>使用目的</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">notes</td>
+                            <td><span class="field-type">TEXT</span></td>
+                            <td><span class="nullable">可空</span></td>
+                            <td>备注信息</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">issues_reported</td>
+                            <td><span class="field-type">TEXT</span></td>
+                            <td><span class="nullable">可空</span></td>
+                            <td>问题反馈</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">project_name</td>
+                            <td><span class="field-type">VARCHAR(100)</span></td>
+                            <td><span class="nullable">可空</span></td>
+                            <td>关联项目名称</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">timestamp</td>
+                            <td><span class="field-type">TIMESTAMP</span></td>
+                            <td><span class="not-null">默认当前时间</span></td>
+                            <td>操作时间</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">auto_recorded</td>
+                            <td><span class="field-type">BOOLEAN</span></td>
+                            <td><span class="not-null">默认false</span></td>
+                            <td>是否自动记录</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 预约管理 -->
+        <div id="reservations" class="tab-content">
+            <div class="table-container">
+                <div class="table-title">
+                    <div class="table-icon">📅</div>
+                    预约表 (reservations)
+                </div>
+                <div class="description">
+                    设备和材料的预约管理，支持时间冲突检测和审批流程。
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>字段名</th>
+                            <th>数据类型</th>
+                            <th>约束</th>
+                            <th>描述</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="field-name">id</td>
+                            <td><span class="field-type">INTEGER</span></td>
+                            <td><span class="not-null">主键</span></td>
+                            <td>预约唯一标识</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">user_id</td>
+                            <td><span class="field-type">INTEGER</span></td>
+                            <td><span class="not-null">外键</span></td>
+                            <td>预约用户ID</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">resource_type</td>
+                            <td><span class="field-type">ENUM</span></td>
+                            <td><span class="not-null">非空</span></td>
+                            <td>资源类型: equipment/material</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">resource_id</td>
+                            <td><span class="field-type">INTEGER</span></td>
+                            <td><span class="not-null">非空</span></td>
+                            <td>资源ID (设备ID或材料ID)</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">start_time</td>
+                            <td><span class="field-type">TIMESTAMP</span></td>
+                            <td><span class="not-null">非空</span></td>
+                            <td>预约开始时间</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">end_time</td>
+                            <td><span class="field-type">TIMESTAMP</span></td>
+                            <td><span class="not-null">非空</span></td>
+                            <td>预约结束时间</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">quantity_reserved</td>
+                            <td><span class="field-type">DECIMAL(10,3)</span></td>
+                            <td><span class="nullable">可空</span></td>
+                            <td>预约数量 (材料专用)</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">purpose</td>
+                            <td><span class="field-type">VARCHAR(200)</span></td>
+                            <td><span class="not-null">非空</span></td>
+                            <td>使用目的</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">project_name</td>
+                            <td><span class="field-type">VARCHAR(100)</span></td>
+                            <td><span class="nullable">可空</span></td>
+                            <td>关联项目名称</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">status</td>
+                            <td><span class="field-type">ENUM</span></td>
+                            <td><span class="not-null">默认'pending'</span></td>
+                            <td>状态: pending/approved/rejected/completed/cancelled</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">approved_by</td>
+                            <td><span class="field-type">INTEGER</span></td>
+                            <td><span class="nullable">外键</span></td>
+                            <td>审批人ID</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">approved_at</td>
+                            <td><span class="field-type">TIMESTAMP</span></td>
+                            <td><span class="nullable">可空</span></td>
+                            <td>审批时间</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">rejection_reason</td>
+                            <td><span class="field-type">TEXT</span></td>
+                            <td><span class="nullable">可空</span></td>
+                            <td>拒绝原因</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">notes</td>
+                            <td><span class="field-type">TEXT</span></td>
+                            <td><span class="nullable">可空</span></td>
+                            <td>预约备注</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">created_at</td>
+                            <td><span class="field-type">TIMESTAMP</span></td>
+                            <td><span class="not-null">默认当前时间</span></td>
+                            <td>创建时间</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">updated_at</td>
+                            <td><span class="field-type">TIMESTAMP</span></td>
+                            <td><span class="nullable">可空</span></td>
+                            <td>更新时间</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 关系图谱 -->
+        <div id="relationships" class="tab-content">
+            <div class="relationships">
+                <h3>🔗 数据表关系图谱</h3>
+                
+                <div class="relationship-item">
+                    <strong>users ↔ roles</strong><br>
+                    users.role_id → roles.id (多对一)<br>
+                    一个用户对应一个角色，一个角色可以被多个用户使用
+                </div>
+                
+                <div class="relationship-item">
+                    <strong>users ↔ user_sessions</strong><br>
+                    user_sessions.user_id → users.id (多对一)<br>
+                    一个用户可以有多个会话记录
+                </div>
+                
+                <div class="relationship-item">
+                    <strong>equipment ↔ equipment_categories</strong><br>
+                    equipment.category_id → equipment_categories.id (多对一)<br>
+                    一个设备属于一个分类，一个分类包含多个设备
+                </div>
+                
+                <div class="relationship-item">
+                    <strong>equipment ↔ users (负责人)</strong><br>
+                    equipment.responsible_user_id → users.id (多对一)<br>
+                    一个设备有一个负责人，一个用户可以负责多个设备
+                </div>
+                
+                <div class="relationship-item">
+                    <strong>materials ↔ material_categories</strong><br>
+                    materials.category_id → material_categories.id (多对一)<br>
+                    一个材料属于一个分类，一个分类包含多个材料
+                </div>
+                
+                <div class="relationship-item">
+                    <strong>materials ↔ users (负责人)</strong><br>
+                    materials.owner_id → users.id (多对一)<br>
+                    一个材料有一个负责人，一个用户可以负责多个材料
+                </div>
+                
+                <div class="relationship-item">
+                    <strong>usage_logs ↔ users</strong><br>
+                    usage_logs.user_id → users.id (多对一)<br>
+                    一条日志对应一个用户，一个用户可以有多条日志
+                </div>
+                
+                <div class="relationship-item">
+                    <strong>usage_logs ↔ equipment/materials</strong><br>
+                    usage_logs.resource_id → equipment.id 或 materials.id (根据resource_type)<br>
+                    使用多态关联，通过resource_type区分资源类型
+                </div>
+                
+                <div class="relationship-item">
+                    <strong>reservations ↔ users (预约者)</strong><br>
+                    reservations.user_id → users.id (多对一)<br>
+                    一个预约对应一个预约用户
+                </div>
+                
+                <div class="relationship-item">
+                    <strong>reservations ↔ users (审批者)</strong><br>
+                    reservations.approved_by → users.id (多对一)<br>
+                    一个预约对应一个审批用户
+                </div>
+                
+                <div class="relationship-item">
+                    <strong>reservations ↔ equipment/materials</strong><br>
+                    reservations.resource_id → equipment.id 或 materials.id (根据resource_type)<br>
+                    预约使用多态关联，通过resource_type区分资源类型
+                </div>
+                
+                <div class="relationship-item">
+                    <strong>分类表自引用关系</strong><br>
+                    equipment_categories.parent_id → equipment_categories.id<br>
+                    material_categories.parent_id → material_categories.id<br>
+                    支持层级分类结构
+                </div>
+            </div>
+        </div>
+
+        <!-- SQL 预览 -->
+        <div id="sql" class="tab-content">
+            <div class="table-container">
+                <div class="table-title">
+                    <div class="table-icon">💻</div>
+                    SQL 建表语句预览
+                </div>
+                <div class="description">
+                    基于 PostgreSQL 语法的建表语句，可根据实际需求调整为 SQLite 语法。
+                </div>
+                
+                <div class="sql-preview">
+<span class="sql-comment">-- 角色表</span>
+<span class="sql-keyword">CREATE TABLE</span> roles (
+    id <span class="sql-type">SERIAL PRIMARY KEY</span>,
+    name <span class="sql-type">VARCHAR(50)</span> <span class="sql-keyword">UNIQUE NOT NULL</span>,
+    description <span class="sql-type">TEXT</span>,
+    permissions <span class="sql-type">JSONB</span>,
+    created_at <span class="sql-type">TIMESTAMP</span> <span class="sql-keyword">DEFAULT CURRENT_TIMESTAMP</span>
+);
+
+<span class="sql-comment">-- 用户表</span>
+<span class="sql-keyword">CREATE TABLE</span> users (
+    id <span class="sql-type">SERIAL PRIMARY KEY</span>,
+    username <span class="sql-type">VARCHAR(50)</span> <span class="sql-keyword">UNIQUE NOT NULL</span>,
+    email <span class="sql-type">VARCHAR(100)</span> <span class="sql-keyword">UNIQUE NOT NULL</span>,
+    hashed_password <span class="sql-type">VARCHAR(255)</span> <span class="sql-keyword">NOT NULL</span>,
+    full_name <span class="sql-type">VARCHAR(100)</span>,
+    phone <span class="sql-type">VARCHAR(20)</span>,
+    role_id <span class="sql-type">INTEGER</span> <span class="sql-keyword">REFERENCES</span> roles(id),
+    is_active <span class="sql-type">BOOLEAN</span> <span class="sql-keyword">DEFAULT TRUE</span>,
+    created_at <span class="sql-type">TIMESTAMP</span> <span class="sql-keyword">DEFAULT CURRENT_TIMESTAMP</span>,
+    last_login_at <span class="sql-type">TIMESTAMP</span>
+);
+
+<span class="sql-comment">-- 用户会话表</span>
+<span class="sql-keyword">CREATE TABLE</span> user_sessions (
+    id <span class="sql-type">SERIAL PRIMARY KEY</span>,
+    user_id <span class="sql-type">INTEGER</span> <span class="sql-keyword">REFERENCES</span> users(id) <span class="sql-keyword">ON DELETE CASCADE</span>,
+    token_hash <span class="sql-type">VARCHAR(255)</span> <span class="sql-keyword">UNIQUE NOT NULL</span>,
+    expires_at <span class="sql-type">TIMESTAMP</span> <span class="sql-keyword">NOT NULL</span>,
+    created_at <span class="sql-type">TIMESTAMP</span> <span class="sql-keyword">DEFAULT CURRENT_TIMESTAMP</span>,
+    ip_address <span class="sql-type">INET</span>,
+    user_agent <span class="sql-type">TEXT</span>
+);
+
+<span class="sql-comment">-- 设备分类表</span>
+<span class="sql-keyword">CREATE TABLE</span> equipment_categories (
+    id <span class="sql-type">SERIAL PRIMARY KEY</span>,
+    name <span class="sql-type">VARCHAR(100)</span> <span class="sql-keyword">UNIQUE NOT NULL</span>,
+    description <span class="sql-type">TEXT</span>,
+    parent_id <span class="sql-type">INTEGER</span> <span class="sql-keyword">REFERENCES</span> equipment_categories(id),
+    created_at <span class="sql-type">TIMESTAMP</span> <span class="sql-keyword">DEFAULT CURRENT_TIMESTAMP</span>
+);
+
+<span class="sql-comment">-- 设备表</span>
+<span class="sql-keyword">CREATE TABLE</span> equipment (
+    id <span class="sql-type">SERIAL PRIMARY KEY</span>,
+    name <span class="sql-type">VARCHAR(100)</span> <span class="sql-keyword">NOT NULL</span>,
+    model <span class="sql-type">VARCHAR(100)</span>,
+    serial_number <span class="sql-type">VARCHAR(100)</span> <span class="sql-keyword">UNIQUE</span>,
+    category_id <span class="sql-type">INTEGER</span> <span class="sql-keyword">REFERENCES</span> equipment_categories(id),
+    status <span class="sql-type">VARCHAR(20)</span> <span class="sql-keyword">DEFAULT</span> 'available' <span class="sql-keyword">CHECK</span> (status <span class="sql-keyword">IN</span> ('available', 'in_use', 'maintenance', 'broken')),
+    location <span class="sql-type">VARCHAR(200)</span>,
+    manual_url <span class="sql-type">TEXT</span>,
+    specifications <span class="sql-type">JSON</span>,
+    purchase_date <span class="sql-type">DATE</span>,
+    purchase_price <span class="sql-type">DECIMAL(10,2)</span>,
+    responsible_user_id <span class="sql-type">INTEGER</span> <span class="sql-keyword">REFERENCES</span> users(id),
+    last_used_at <span class="sql-type">TIMESTAMP</span>,
+    created_at <span class="sql-type">TIMESTAMP</span> <span class="sql-keyword">DEFAULT CURRENT_TIMESTAMP</span>,
+    updated_at <span class="sql-type">TIMESTAMP</span>
+);
+
+<span class="sql-comment">-- 维护记录表</span>
+<span class="sql-keyword">CREATE TABLE</span> maintenance_records (
+    id <span class="sql-type">SERIAL PRIMARY KEY</span>,
+    equipment_id <span class="sql-type">INTEGER</span> <span class="sql-keyword">REFERENCES</span> equipment(id) <span class="sql-keyword">ON DELETE CASCADE</span>,
+    maintainer_id <span class="sql-type">INTEGER</span> <span class="sql-keyword">REFERENCES</span> users(id),
+    maintenance_type <span class="sql-type">VARCHAR(20)</span> <span class="sql-keyword">NOT NULL</span>,
+    description <span class="sql-type">TEXT</span>,
+    maintenance_date <span class="sql-type">TIMESTAMP</span> <span class="sql-keyword">DEFAULT CURRENT_TIMESTAMP</span>,
+    next_maintenance_date <span class="sql-type">TIMESTAMP</span>
+);
+
+<!-- 你可以继续补充其他表的SQL语句，保持风格一致 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 设备管理 -->
+        <div id="equipment" class="tab-content">
+            <div class="table-container">
+                <div class="table-title">
+                    <div class="table-icon">🔧</div>
+                    设备表 (equipment)
+                </div>
+                <div class="description">
+                    管理实验室所有设备信息，包括状态跟踪、使用说明和维护记录。
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>字段名</th>
+                            <th>数据类型</th>
+                            <th>约束</th>
+                            <th>描述</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="field-name">id</td>
+                            <td><span class="field-type">INTEGER</span></td>
+                            <td><span class="not-null">主键</span></td>
+                            <td>设备唯一标识</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">name</td>
+                            <td><span class="field-type">VARCHAR(100)</span></td>
+                            <td><span class="not-null">非空</span></td>
+                            <td>设备名称</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">model</td>
+                            <td><span class="field-type">VARCHAR(100)</span></td>
+                            <td><span class="nullable">可空</span></td>
+                            <td>设备型号</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">serial_number</td>
+                            <td><span class="field-type">VARCHAR(100)</span></td>
+                            <td><span class="nullable">唯一</span></td>
+                            <td>设备序列号</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">category_id</td>
+                            <td><span class="field-type">INTEGER</span></td>
+                            <td><span class="not-null">外键</span></td>
+                            <td>设备分类ID</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">status</td>
+                            <td><span class="field-type">ENUM</span></td>
+                            <td><span class="not-null">默认'available'</span></td>
+                            <td>状态: available/in_use/maintenance/broken</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">location</td>
+                            <td><span class="field-type">VARCHAR(200)</span></td>
+                            <td><span class="nullable">可空</span></td>
+                            <td>设备位置</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">manual_url</td>
+                            <td><span class="field-type">TEXT</span></td>
+                            <td><span class="nullable">可空</span></td>
+                            <td>使用说明文档链接</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">specifications</td>
+                            <td><span class="field-type">JSON</span></td>
+                            <td><span class="nullable">可空</span></td>
+                            <td>技术规格参数</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">purchase_date</td>
+                            <td><span class="field-type">DATE</span></td>
+                            <td><span class="nullable">可空</span></td>
+                            <td>购买日期</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">purchase_price</td>
+                            <td><span class="field-type">DECIMAL(10,2)</span></td>
+                            <td><span class="nullable">可空</span></td>
+                            <td>购买价格</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">responsible_user_id</td>
+                            <td><span class="field-type">INTEGER</span></td>
+                            <td><span class="nullable">外键</span></td>
+                            <td>负责人ID</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">last_used_at</td>
+                            <td><span class="field-type">TIMESTAMP</span></td>
+                            <td><span class="nullable">可空</span></td>
+                            <td>最后使用时间</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">created_at</td>
+                            <td><span class="field-type">TIMESTAMP</span></td>
+                            <td><span class="not-null">默认当前时间</span></td>
+                            <td>创建时间</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">updated_at</td>
+                            <td><span class="field-type">TIMESTAMP</span></td>
+                            <td><span class="nullable">可空</span></td>
+                            <td>更新时间</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-container">
+                <div class="table-title">
+                    <div class="table-icon">📂</div>
+                    设备分类表 (equipment_categories)
+                </div>
+                <div class="description">
+                    设备分类管理，便于设备的组织和检索。
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>字段名</th>
+                            <th>数据类型</th>
+                            <th>约束</th>
+                            <th>描述</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="field-name">id</td>
+                            <td><span class="field-type">INTEGER</span></td>
+                            <td><span class="not-null">主键</span></td>
+                            <td>分类唯一标识</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">name</td>
+                            <td><span class="field-type">VARCHAR(100)</span></td>
+                            <td><span class="not-null">唯一 非空</span></td>
+                            <td>分类名称</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">description</td>
+                            <td><span class="field-type">TEXT</span></td>
+                            <td><span class="nullable">可空</span></td>
+                            <td>分类描述</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">parent_id</td>
+                            <td><span class="field-type">INTEGER</span></td>
+                            <td><span class="nullable">外键(自关联)</span></td>
+                            <td>父分类ID，支持层级分类</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">created_at</td>
+                            <td><span class="field-type">TIMESTAMP</span></td>
+                            <td><span class="not-null">默认当前时间</span></td>
+                            <td>创建时间</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 维护记录表 -->
+        <div class="table-container">
+            <div class="table-title">
+                <div class="table-icon">🛠️</div>
+                维护记录表 (maintenance_records)
+            </div>
+            <div class="description">
+                记录设备的维护、检修和保养历史。
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>字段名</th>
+                        <th>数据类型</th>
+                        <th>约束</th>
+                        <th>描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="field-name">id</td>
+                        <td><span class="field-type">INTEGER</span></td>
+                        <td><span class="not-null">主键</span></td>
+                        <td>维护记录唯一标识</td>
+                    </tr>
+                    <tr>
+                        <td class="field-name">equipment_id</td>
+                        <td><span class="field-type">INTEGER</span></td>
+                        <td><span class="not-null">外键</span></td>
+                        <td>关联设备ID</td>
+                    </tr>
+                    <tr>
+                        <td class="field-name">maintainer_id</td>
+                        <td><span class="field-type">INTEGER</span></td>
+                        <td><span class="nullable">外键</span></td>
+                        <td>维护人ID</td>
+                    </tr>
+                    <tr>
+                        <td class="field-name">maintenance_type</td>
+                        <td><span class="field-type">ENUM</span></td>
+                        <td><span class="not-null">非空</span></td>
+                        <td>维护类型: routine/repair/upgrade/other</td>
+                    </tr>
+                    <tr>
+                        <td class="field-name">description</td>
+                        <td><span class="field-type">TEXT</span></td>
+                        <td><span class="nullable">可空</span></td>
+                        <td>维护内容描述</td>
+                    </tr>
+                    <tr>
+                        <td class="field-name">maintenance_date</td>
+                        <td><span class="field-type">TIMESTAMP</span></td>
+                        <td><span class="not-null">默认当前时间</span></td>
+                        <td>维护时间</td>
+                    </tr>
+                    <tr>
+                        <td class="field-name">next_maintenance_date</td>
+                        <td><span class="field-type">TIMESTAMP</span></td>
+                        <td><span class="nullable">可空</span></td>
+                        <td>下次维护时间</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        function showTab(tabId) {
+            var tabs = document.querySelectorAll('.tab-content');
+            var btns = document.querySelectorAll('.tab-btn');
+            tabs.forEach(function(tab) {
+                tab.classList.remove('active');
+            });
+            btns.forEach(function(btn) {
+                btn.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+            var btn = Array.from(btns).find(b => b.textContent.includes(document.querySelector('#' + tabId + ' .table-title')?.textContent?.trim()?.slice(0,2) || ''));
+            if(btn) btn.classList.add('active');
+        }
+    </script>
+</body>
+</html>
