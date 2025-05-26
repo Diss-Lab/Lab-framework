@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api import users
+from app.api import users, usage_logs
 
 app = FastAPI(
     title="实验室管理系统 API",
@@ -18,6 +18,7 @@ app.add_middleware(
 )
 
 app.include_router(users.router)
+app.include_router(usage_logs.router)
 
 @app.get("/")
 async def root():
