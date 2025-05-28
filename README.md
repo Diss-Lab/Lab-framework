@@ -1,10 +1,53 @@
 # Lab-framework-core
 
+## 项目简介
+Lab-framework-core 是一个基于 FastAPI 的实验室管理系统核心框架，提供用户认证、权限管理等基础功能。本框架采用前后端分离架构，后端使用 Python FastAPI 框架，提供 RESTful API 接口。
 
+### 主要功能
+- 用户认证系统（登录/注册）
+- JWT Token 认证
+- 基于角色的权限控制
+- RESTful API 接口
+- 自动生成的 API 文档
 
+## 项目依赖
+### 后端依赖
+- Python 3.8+
+- FastAPI 0.68.0+
+- SQLAlchemy 1.4.0+
+- passlib 1.7.4+
+- python-jose 3.3.0+
+- uvicorn 0.15.0+
+- python-multipart 0.0.5+
+- bcrypt 3.2.0+
 
+## 项目结构
+```
+lab-framework-core/
+├── backend/
+│   ├── app/
+│   │   ├── api/
+│   │   │   └── deps.py
+│   │   ├── core/
+│   │   │   └── security.py
+│   │   ├── models/
+│   │   │   └── user.py
+│   │   └── main.py
+│   ├── requirements.txt
+│   └── venv/
+└── README.md
+```
 
-## 后端基础服务启动说明
+## 开发环境配置
+### 前端开发环境
+1. 确保已安装 Node.js (14.x+) 和 npm
+2. 安装项目依赖：`npm install`
+3. 启动开发服务器：`npm run dev`
+4. 访问 http://localhost:3000
+
+## 后端开发环境配置
+
+### 基础服务启动步骤
 
 1. 进入 backend 目录：
    ```bash
@@ -29,12 +72,12 @@
 
 如需关闭服务，按下 `Ctrl+C` 即可。
 
-
 ---
+## 系统功能说明
 
-## 用户认证系统实现步骤与维护须知
+### 用户认证系统实现说明
 
-### 1. 密码加密与校验工具
+#### 1. 密码加密与校验工具
 - 作用：保证用户密码安全，存储时只保存加密后的密码。
 - 维护须知：如需更换加密算法，需同步修改注册和登录逻辑。
 - 实现说明：
@@ -43,7 +86,7 @@
     - `get_password_hash(password)`：加密明文密码
     - `verify_password(plain, hashed)`：校验明文密码和哈希密码
 
-### 2. JWT 生成与校验工具
+#### 2. JWT 生成与校验工具
 - 作用：为登录用户生成令牌（Token），用于后续接口的身份校验。
 - 维护须知：密钥和Token过期时间需妥善保管和配置，泄露会导致安全风险。
 - 实现说明：
@@ -53,15 +96,15 @@
     - `decode_access_token(token)`：校验并解析Token
   - `SECRET_KEY` 建议在生产环境中通过环境变量配置。
 
-### 3. 用户注册与登录接口
+#### 3. 用户注册与登录接口
 - 作用：注册仅限管理员操作，普通用户不能自助注册。登录接口返回JWT Token。
 - 维护须知：注册接口应校验当前用户权限，防止越权注册。
 
-### 4. 用户相关API路由
+#### 4. 用户相关API路由
 - 作用：统一管理用户相关接口，便于维护和扩展。
 - 维护须知：如需扩展用户功能（如重置密码、修改信息），建议在此目录下新增API。
 
-### 5. 用户身份与权限依赖项
+#### 5. 用户身份与权限依赖项
 - 作用：用于API接口中自动获取当前用户、校验用户身份和权限。
 - 维护须知：如需调整权限逻辑（如增加角色类型），需同步修改依赖项实现。
 - 实现说明：
@@ -70,7 +113,9 @@
     - `get_current_admin_user`：校验当前用户是否为管理员
   - 依赖项可在API接口参数中通过 `Depends` 注入。
 
-### 6. 用户注册与登录接口说明
+### API 接口说明
+
+#### 用户注册与登录接口
 - 注册接口：`POST /api/register`
   - 仅管理员可用，需携带管理员Token。
   - 请求体：`UserCreate`（用户名、邮箱、密码、角色）
@@ -82,7 +127,7 @@
   - 注册接口需校验当前用户权限，防止越权注册。
   - 登录接口返回的Token用于后续所有需要认证的接口。
 
-### 7. 接口测试指南
+### 接口测试指南
 
 #### 1. 启动后端服务
 确保已按照前述步骤启动 FastAPI 服务。
@@ -138,3 +183,17 @@ curl -X POST "http://127.0.0.1:8000/api/login" -d 'username=user1&password=userp
 - 登录接口返回 400：请检查用户名和密码是否正确
 - 其他问题可通过 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) 交互式文档测试
 
+## 贡献指南
+1. Fork 本仓库
+2. 创建您的特性分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交您的更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 开启一个 Pull Request
+
+## License
+本项目采用 MIT License 开源许可证。详见 [LICENSE](LICENSE) 文件。
+
+## 问题反馈
+- 提交 Issue: https://github.com/your-username/lab-framework-core/issues
+- 邮件联系: support@example.com
+- 项目讨论区: https://github.com/your-username/lab-framework-core/discussions

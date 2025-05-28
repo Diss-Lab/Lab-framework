@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "es5", // 或更新的 ECMAScript 版本，如 "es2020"
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true, // 如果您的构建工具（如 Babel, Vite, CRA）处理转译，则设置为 true
+    "jsx": "react-jsx" //  <-- 这是关键配置
+  },
+  "include": [
+    "src" // 确保这里包含了您的源代码目录，例如 "src"
+  ]
+}
