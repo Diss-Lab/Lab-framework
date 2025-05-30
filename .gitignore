@@ -34,3 +34,60 @@ __pycache__/
 .DS_Store
 Thumbs.db
 frontend/node_modules/
+
+# Node.js
+node_modules/
+**/node_modules/
+.cache/
+**/.cache/
+dist/
+**/dist/
+build/
+**/build/
+
+# 前端构建产物
+frontend/build/
+frontend/dist/
+frontend/.cache/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# 虚拟环境
+venv/
+ENV/
+env/
+
+# 数据库
+*.sqlite3
+*.db
+
+# 日志
+*.log
+
+# 编辑器和IDE文件
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
