@@ -1,20 +1,30 @@
 /**
- * 类型定义文件
+ * 资源类型枚举
  */
+export enum ResourceType {
+  EQUIPMENT = "equipment",
+  MATERIAL = "material"
+}
 
-/** 资源类型 */
-export type ResourceType = 'equipment' | 'material';
+/**
+ * 操作类型枚举
+ */
+export enum ActionType {
+  START_USE = "start_use",
+  END_USE = "end_use",
+  CONSUME = "consume",
+  MAINTENANCE = "maintenance"
+}
 
-/** 操作类型 */
-export type ActionType = 'start_use' | 'end_use' | 'consume' | 'maintenance';
-
-/** 使用日志接口 */
+/**
+ * 使用日志接口定义
+ */
 export interface UsageLog {
   id: number;
   user_id: number;
-  resource_type: ResourceType;
+  resource_type: ResourceType | string;
   resource_id: number;
-  action: ActionType;
+  action: ActionType | string;
   quantity_used?: number;
   duration_minutes?: number;
   purpose?: string;
@@ -25,7 +35,9 @@ export interface UsageLog {
   auto_recorded?: boolean;
 }
 
-/** 表单数据接口 */
+/**
+ * 表单数据接口
+ */
 export interface LogFormData {
   resource_type: ResourceType;
   resource_id: string;
@@ -39,7 +51,9 @@ export interface LogFormData {
   auto_recorded: boolean;
 }
 
-/** API 响应接口 */
+/**
+ * API 响应接口
+ */
 export interface ApiResponse<T> {
   data: T;
   message?: string;

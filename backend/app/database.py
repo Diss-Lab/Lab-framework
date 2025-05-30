@@ -17,28 +17,23 @@
 """
 
 from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-from app.models.usage_log import Base as UsageLogBase
-from app.models.user import Base as UserBase
-
-# 数据库连接配置
-# 当前使用SQLite数据库，数据库文件位于当前目录的test.db
-# 可以通过修改此URL切换到其他数据库（如PostgreSQL、MySQL等）
-SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"  # 可根据需要更换为PostgreSQL等
+# 数据库 URL (SQLite 文件路径)
+SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
+# 如果使用 PostgreSQL 或其他数据库，URL 格式会不同
 
 # 创建数据库引擎
-# connect_args={'check_same_thread': False} 是SQLite特有的设置
-# 允许多线程访问数据库，生产环境中使用其他数据库时可以移除此参数
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
 )
 
-# 创建会话工厂
-# autocommit=False: 不自动提交事务
-# autoflush=False: 不自动刷新session
-# bind=engine: 绑定到上面创建的数据库引擎
+# 创建数据库会话
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# 创建所有模型的基类
+Base = declarative_base()
 
 def get_db():
     """
@@ -63,5 +58,6 @@ def init_db():
     根据模型定义创建用户表和使用日志表
     如果表已存在，则不会重复创建
     """
-    UserBase.metadata.create_all(bind=engine)
-    UsageLogBase.metadata.create_all(bind=engine)
+    # 导入所有模型以确保它们被注册到 Base.metadata
+    from app.models import user, usage_log
+    Base.metadata.create_all(bind=engine)

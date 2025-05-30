@@ -13,6 +13,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api import users, usage_logs
+from app.database import create_tables
 
 # 创建 FastAPI 应用实例
 # 配置应用基本信息，包括标题、描述和版本号
@@ -22,6 +23,12 @@ app = FastAPI(
     description="本系统用于实验室用户、设备、材料、数据的统一管理。",
     version="1.0.0"
 )
+
+# 在应用启动时创建数据库表
+@app.on_event("startup")
+async def startup_db_client():
+    create_tables()
+    print("数据库表已创建/更新")
 
 # CORS（跨源资源共享）中间件配置
 # 开发环境下允许所有来源访问API

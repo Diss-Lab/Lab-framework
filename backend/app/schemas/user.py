@@ -5,17 +5,21 @@ import datetime
 class UserBase(BaseModel):
     username: str
     email: EmailStr
-    role: Optional[str] = "user"
+    role: str = "user"
+    
+    class Config:
+        # 修改 orm_mode 为 from_attributes，适配 Pydantic V2
+        from_attributes = True  # 替换原来的 orm_mode = True
 
 class UserCreate(UserBase):
     password: str
 
 class UserRead(UserBase):
     id: int
-    created_at: datetime.datetime
-
+    
     class Config:
-        orm_mode = True
+        # 确保这里也使用 from_attributes
+        from_attributes = True
 
 class UserInDB(UserBase):
     id: int
@@ -23,4 +27,4 @@ class UserInDB(UserBase):
     created_at: datetime.datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True  # 替换 orm_mode = True
