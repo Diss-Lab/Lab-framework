@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Numeric, Boolean, ForeignKey, Enum, Text
+from sqlalchemy import Column, Integer, String, DateTime, Numeric, Boolean, ForeignKey, Text
 from sqlalchemy.ext.declarative import declarative_base
 import datetime
 
@@ -9,9 +9,9 @@ class UsageLog(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    resource_type = Column(String(20), nullable=False)  # "equipment" or "material"
+    resource_type = Column(String(20), nullable=False)
     resource_id = Column(Integer, nullable=False)
-    action = Column(String(20), nullable=False)  # start_use/end_use/consume/maintenance
+    action = Column(String(20), nullable=False)
     quantity_used = Column(Numeric(10, 3))
     duration_minutes = Column(Integer)
     purpose = Column(String(200))
