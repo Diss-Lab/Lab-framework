@@ -61,3 +61,12 @@ def init_db():
     # 导入所有模型以确保它们被注册到 Base.metadata
     from app.models import user, usage_log
     Base.metadata.create_all(bind=engine)
+
+def create_tables():
+    """
+    创建数据库表
+
+    根据当前模型的定义创建所有表。如果表已经存在，则不会重复创建。
+    通常在应用启动时调用一次。
+    """
+    Base.metadata.create_all(bind=engine)

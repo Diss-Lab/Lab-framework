@@ -1,26 +1,36 @@
-from pydantic import BaseModel
-from typing import Optional
-import datetime
+"""
+使用日志相关的Pydantic模型
 
+该模块定义了使用日志数据的Pydantic模型，用于数据验证、序列化和反序列化。
+"""
+
+from pydantic import BaseModel, Field
+from typing import Optional
+from datetime import datetime
+
+# 使用日志基础模型
 class UsageLogBase(BaseModel):
-    resource_type: str  # "equipment" or "material"
+    resource_type: str
     resource_id: int
-    action: str  # start_use/end_use/consume/maintenance
+    action: str
     quantity_used: Optional[float] = None
     duration_minutes: Optional[int] = None
     purpose: Optional[str] = None
     notes: Optional[str] = None
     issues_reported: Optional[str] = None
     project_name: Optional[str] = None
-    auto_recorded: Optional[bool] = False
 
+# 使用日志创建模型
 class UsageLogCreate(UsageLogBase):
-    pass
-
+    user_id: int
+    auto_recorded: bool = False
+    
+# 使用日志读取模型
 class UsageLogRead(UsageLogBase):
     id: int
     user_id: int
-    timestamp: datetime.datetime
-
+    timestamp: datetime
+    auto_recorded: bool
+    
     class Config:
-        orm_mode = True
+        from_attributes = True

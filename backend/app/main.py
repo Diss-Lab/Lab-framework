@@ -1,59 +1,46 @@
 """
-实验室管理系统 API 服务
+FastAPI应用程序入口
 
-本模块实现了实验室管理系统的主要 API 服务，提供用户管理、使用记录等功能。
-使用 FastAPI 框架构建，支持异步操作，提供 OpenAPI 文档。
-
-主要功能：
-- 用户管理 API
-- 使用记录管理 API
-- CORS 跨域支持
+此模块初始化FastAPI应用程序，配置数据库连接，设置中间件，
+并包含API路由设置。
 """
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api import users, usage_logs
-from app.database import create_tables
 
-# 创建 FastAPI 应用实例
-# 配置应用基本信息，包括标题、描述和版本号
-# 这些信息将显示在自动生成的 API 文档中
+from app.database import init_db, create_tables
+from app.api import users, usage_logs
+
+# 初始化FastAPI应用
 app = FastAPI(
-    title="实验室管理系统 API",
-    description="本系统用于实验室用户、设备、材料、数据的统一管理。",
-    version="1.0.0"
+    title="实验室管理系统",
+    description="实验室设备和资源管理系统API",
+    version="0.1.0",
 )
 
-# 在应用启动时创建数据库表
-@app.on_event("startup")
-async def startup_db_client():
-    create_tables()
-    print("数据库表已创建/更新")
-
-# CORS（跨源资源共享）中间件配置
-# 开发环境下允许所有来源访问API
-# allow_origins: 允许的源列表
-# allow_credentials: 允许携带认证信息
-# allow_methods: 允许的 HTTP 方法
-# allow_headers: 允许的 HTTP 头
+# 配置CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # 在生产环境中应限制为前端域名
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# 注册路由模块
-# users: 用户相关的路由处理器
-# usage_logs: 使用记录相关的路由处理器
-app.include_router(users.router)
-app.include_router(usage_logs.router)
+# 初始化数据库表
+create_tables()
+# 或者使用 init_db() 两者都可以
 
-# API 根路径
-# 返回欢迎信息
-# 方法: GET
-# 路径: /
+# 包含API路由
+app.include_router(users.router, prefix="/api")
+app.include_router(usage_logs.router, prefix="/api")
+
 @app.get("/")
-async def root():
-    return {"message": "欢迎使用实验室管理系统 API"}
+def root():
+    """
+    根路由，返回API欢迎信息
+    """
+    return {
+        "message": "欢迎使用实验室管理系统API",
+        "documentation": "/docs",
+    }
